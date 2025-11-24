@@ -6,6 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import numpy as np
+import time
 
 # ============================================================
 # 1. Ambil argumen dari MLProject
@@ -44,16 +45,18 @@ with mlflow.start_run():
         random_state=42
     )
 
+    # ================= Inference & Metrics =================
+    start = time.time()
     model.fit(X_train, y_train)
     preds = model.predict(X_test)
+    inference_time = time.time() - start  # metric tambahan
 
-    # Metrics
     mae = mean_absolute_error(y_test, preds)
     mse = mean_squared_error(y_test, preds)
     rmse = np.sqrt(mse)
     r2 = r2_score(y_test, preds)
 
-    # Logging manual
+    # ================= Logging manual =================
     mlflow.log_param("n_estimators", 100)
     mlflow.log_param("max_depth", 5)
     mlflow.log_param("test_size", args.test_size)
@@ -63,8 +66,9 @@ with mlflow.start_run():
     mlflow.log_metric("MSE", mse)
     mlflow.log_metric("RMSE", rmse)
     mlflow.log_metric("R2", r2)
+    mlflow.log_metric("Inference_Time", inference_time)  # metric ke-5
 
-    # Save model
+    # ================= Save model =================
     mlflow.sklearn.log_model(model, "model")
 
 print("Training CI selesai. R2 =", r2)
