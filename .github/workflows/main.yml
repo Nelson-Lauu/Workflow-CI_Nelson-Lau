@@ -1,0 +1,34 @@
+name: MLflow CI
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  train:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: mlflow-env
+          environment-file: MLProject/conda.yaml
+          python-version: 3.12
+
+      - name: Install MLflow
+        run: pip install mlflow
+
+      - name: Run MLflow Project
+        run: |
+          mlflow run MLProject \
+            -P data_path=MLProject/namadataset_preprocessing/df_cleaned.csv
+
+      - name: Upload Artefacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: mlruns
+          path: ./mlruns
