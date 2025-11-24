@@ -1,11 +1,8 @@
-name: CI_Model
+name: CI_Workflow_Model
+python_env: requirements.txt
 
 entry_points:
   main:
+    command: "python modelling.py --data_path {data_path}"
     parameters:
-      data_path: {type: path}
-    command: >
-      python modelling.py --data_path {data_path}
-
-env: python_env
-
+      data_path: {type: str}
