@@ -10,18 +10,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-      - name: Setup Miniconda
-        uses: conda-incubator/setup-miniconda@v2
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          activate-environment: mlflow-env
-          environment-file: MLProject/conda.yaml
-          python-version: 3.12
+          python-version: "3.10"
 
-      - name: Install MLflow
-        run: pip install mlflow
+      - name: Install dependencies
+        run: |
+          pip install -r MLProject/requirements.txt
 
       - name: Run MLflow Project
         run: |
@@ -29,8 +28,7 @@ jobs:
             -P data_path=MLProject/namadataset_preprocessing/df_cleaned.csv
 
       - name: Upload Artefacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: mlruns
           path: ./mlruns
-
