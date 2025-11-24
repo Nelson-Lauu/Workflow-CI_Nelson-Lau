@@ -1,7 +1,5 @@
 name: CI_Workflow_Model
 
-# conda_env: conda.yml
-
 entry_points:
   main:
     parameters:
