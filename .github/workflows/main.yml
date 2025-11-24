@@ -13,22 +13,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Miniconda
-        uses: conda-incubator/setup-miniconda@v2
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          activate-environment: mlflow-env
-          python-version: 3.12
+          python-version: "3.12"
 
-      - name: Create Conda Environment
-        run: conda env create -f MLProject/conda.yaml
-
-      - name: Install MLflow
-        run: pip install mlflow
+      - name: Install dependencies
+        run: |
+          pip install -r MLProject/requirements.txt
 
       - name: Run MLflow Project
         run: |
-          mlflow run MLProject \
-            -P data_path=MLProject/namadataset_preprocessing/df_cleaned.csv
+          mlflow run MLProject -P data_path=MLProject/namadataset_preprocessing/df_cleaned.csv
 
       - name: Upload Artefacts
         uses: actions/upload-artifact@v4
