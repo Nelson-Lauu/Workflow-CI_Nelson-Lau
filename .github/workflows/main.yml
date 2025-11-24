@@ -1,4 +1,4 @@
-name: Re-train ML Model
+name: Skilled CI Model Training
 
 on:
   push:
@@ -11,11 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout repo
+      # 1️⃣ Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2️⃣ Setup Miniconda environment
+      # 2️⃣ Setup Conda environment
       - name: Setup Conda
         uses: conda-incubator/setup-miniconda@v2
         with:
@@ -23,7 +23,7 @@ jobs:
           activate-environment: mlflow-env
           python-version: 3.10
 
-      # 3️⃣ Install MLflow (in case not in conda)
+      # 3️⃣ Install MLflow (if not in conda)
       - name: Install MLflow
         run: pip install mlflow
 
@@ -31,10 +31,9 @@ jobs:
       - name: Run MLProject Training
         run: mlflow run MLProject -e main
 
-      # 5️⃣ Upload MLflow artefacts (optional, untuk review)
+      # 5️⃣ Upload MLflow artefacts (updated to v4)
       - name: Upload MLflow Artefacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: trained-model
           path: MLProject/mlruns
-
