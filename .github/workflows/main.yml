@@ -2,7 +2,7 @@ name: MLflow CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
 
 jobs:
@@ -17,8 +17,10 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: mlflow-env
-          environment-file: MLProject/conda.yaml
           python-version: 3.12
+
+      - name: Create Conda Environment
+        run: conda env create -f MLProject/conda.yaml
 
       - name: Install MLflow
         run: pip install mlflow
