@@ -1,9 +1,10 @@
-name: Skilled CI Model Training
+name: Run Model Training Automatically
 
 on:
   push:
-    branches:
-      - main
+    paths:
+      - "MLProject/modelling.py"
+      - "MLProject/namadataset_preprocessing/df_cleaned.csv"
   workflow_dispatch:
 
 jobs:
@@ -13,25 +14,25 @@ jobs:
     steps:
       # 1️⃣ Checkout repository
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # 2️⃣ Setup Conda environment
-      - name: Setup Conda
-        uses: conda-incubator/setup-miniconda@v2
+      # 2️⃣ Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          environment-file: MLProject/conda.yaml
-          activate-environment: mlflow-env
-          python-version: 3.10
+          python-version: "3.10"
 
-      # 3️⃣ Install MLflow (if not in conda)
-      - name: Install MLflow
-        run: pip install mlflow
+      # 3️⃣ Install dependencies
+      - name: Install dependencies
+        run: |
+          pip install mlflow scikit-learn pandas numpy joblib matplotlib
 
-      # 4️⃣ Run MLProject entry point
+      # 4️⃣ Run MLproject entry point
       - name: Run MLProject Training
-        run: mlflow run MLProject -e main
+        run: |
+          mlflow run MLProject -e main
 
-      # 5️⃣ Upload MLflow artefacts (updated to v4)
+      # 5️⃣ Upload MLflow artefacts
       - name: Upload MLflow Artefacts
         uses: actions/upload-artifact@v4
         with:
