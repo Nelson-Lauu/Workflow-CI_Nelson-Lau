@@ -1,7 +1,11 @@
-name: mlproject-workflow
+name: CI_Model
 
 entry_points:
   main:
     parameters:
-      data_path: {type: str}
-    command: "python modelling.py --data_path {data_path}"
+      data_path: {type: path}
+    command: >
+      python modelling.py --data_path {data_path}
+
+env: python_env
+
