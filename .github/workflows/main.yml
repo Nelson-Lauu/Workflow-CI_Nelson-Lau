@@ -1,4 +1,4 @@
-name: Run Model Training Automatically
+name: Skilled CI Model Training
 
 on:
   push:
@@ -22,15 +22,14 @@ jobs:
         with:
           python-version: "3.10"
 
-      # 3️⃣ Install dependencies
+      # 3️⃣ Install dependencies via pip
       - name: Install dependencies
         run: |
           pip install mlflow scikit-learn pandas numpy joblib matplotlib
 
-      # 4️⃣ Run MLproject entry point
+      # 4️⃣ Run MLProject entry point tanpa conda
       - name: Run MLProject Training
-        run: |
-          mlflow run MLProject -e main
+        run: mlflow run MLProject -e main --no-conda
 
       # 5️⃣ Upload MLflow artefacts
       - name: Upload MLflow Artefacts
