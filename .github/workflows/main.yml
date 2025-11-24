@@ -27,15 +27,21 @@ jobs:
         run: |
           pip install mlflow scikit-learn pandas numpy joblib matplotlib
 
-      # 4️⃣ Run modelling.py langsung
+      # 4️⃣ Set MLflow tracking folder
+      - name: Set MLflow tracking folder
+        run: |
+          mkdir -p MLProject/mlruns
+          export MLFLOW_TRACKING_URI=MLProject/mlruns
+
+      # 5️⃣ Run modelling.py langsung
       - name: Run model training
         run: |
-          python MLProject/modelling.py \
+          MLFLOW_TRACKING_URI=MLProject/mlruns python MLProject/modelling.py \
             --data_path MLProject/namadataset_preprocessing/df_cleaned.csv \
             --test_size 0.2 \
             --random_state 42
 
-      # 5️⃣ Upload MLflow artefacts
+      # 6️⃣ Upload MLflow artefacts
       - name: Upload MLflow Artefacts
         uses: actions/upload-artifact@v4
         with:
