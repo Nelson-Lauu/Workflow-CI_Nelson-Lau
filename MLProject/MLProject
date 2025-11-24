@@ -7,4 +7,3 @@ entry_points:
     parameters:
       data_path: {type: str}
     command: "python modelling.py --data_path {data_path}"
-
