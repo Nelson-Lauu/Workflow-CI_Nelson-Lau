@@ -19,14 +19,13 @@ parser.add_argument("--random_state", type=int, default=42)
 args = parser.parse_args()
 
 # ============================================================
-# 2. Load Data Preprocessing
+# 2. Load Data
 # ============================================================
 df = pd.read_csv(args.data_path)
 
 # Target = rata-rata 3 nilai
 df["avg_score"] = df[["math score", "reading score", "writing score"]].mean(axis=1)
 
-# Fitur & target
 X = df.drop(columns=["avg_score"])
 y = df["avg_score"]
 
@@ -35,8 +34,9 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 # ============================================================
-# 3. MLflow Experiment
+# 3. MLflow config — WAJIB
 # ============================================================
+mlflow.set_tracking_uri("MLProject/mlruns")   # ⬅⬅⬅ PENTING BANGET
 mlflow.set_experiment("CI_Workflow_Model")
 
 with mlflow.start_run():
@@ -62,7 +62,7 @@ with mlflow.start_run():
     rmse = np.sqrt(mse)
     r2 = r2_score(y_test, preds)
 
-    # ================= Logging manual =================
+    # ================= Logging =================
     mlflow.log_param("n_estimators", 100)
     mlflow.log_param("max_depth", 5)
     mlflow.log_param("test_size", args.test_size)
@@ -74,7 +74,7 @@ with mlflow.start_run():
     mlflow.log_metric("R2", r2)
     mlflow.log_metric("Inference_Time", inference_time)
 
-    # ================= Save Model =================
+    # ================= Simpan Model =================
     mlflow.sklearn.log_model(model, artifact_path="model")
 
 print("Training CI selesai. R2 =", r2)
