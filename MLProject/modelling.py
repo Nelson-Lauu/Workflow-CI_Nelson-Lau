@@ -34,9 +34,12 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 # ============================================================
-# 3. MLflow config — WAJIB
+# 3. MLflow config — FIX UTAMA
 # ============================================================
-mlflow.set_tracking_uri("MLProject/mlruns")   # ⬅⬅⬅ PENTING BANGET
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TRACKING_DIR = os.path.join(BASE_DIR, "mlruns")
+
+mlflow.set_tracking_uri("file://" + TRACKING_DIR)
 mlflow.set_experiment("CI_Workflow_Model")
 
 with mlflow.start_run():
