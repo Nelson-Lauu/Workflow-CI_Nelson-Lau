@@ -7,6 +7,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import numpy as np
 import time
+import os
 
 # ============================================================
 # 1. Ambil argumen dari MLProject
@@ -25,6 +26,7 @@ df = pd.read_csv(args.data_path)
 # Target = rata-rata 3 nilai
 df["avg_score"] = df[["math score", "reading score", "writing score"]].mean(axis=1)
 
+# Fitur & target
 X = df.drop(columns=["avg_score"])
 y = df["avg_score"]
 
@@ -33,24 +35,28 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 # ============================================================
-# 3. Start run MLflow
+# 3. MLflow Experiment
 # ============================================================
 mlflow.set_experiment("CI_Workflow_Model")
 
 with mlflow.start_run():
 
+    # ================= Model =================
     model = RandomForestRegressor(
         n_estimators=100,
         max_depth=5,
         random_state=42
     )
 
-    # ================= Inference & Metrics =================
+    # ================= Training =================
     start = time.time()
     model.fit(X_train, y_train)
-    preds = model.predict(X_test)
-    inference_time = time.time() - start  # metric tambahan
+    inference_time = time.time() - start
 
+    # ================= Predict =================
+    preds = model.predict(X_test)
+
+    # ================= Metrics =================
     mae = mean_absolute_error(y_test, preds)
     mse = mean_squared_error(y_test, preds)
     rmse = np.sqrt(mse)
@@ -66,9 +72,9 @@ with mlflow.start_run():
     mlflow.log_metric("MSE", mse)
     mlflow.log_metric("RMSE", rmse)
     mlflow.log_metric("R2", r2)
-    mlflow.log_metric("Inference_Time", inference_time)  # metric ke-5
+    mlflow.log_metric("Inference_Time", inference_time)
 
-    # ================= Save model =================
-    mlflow.sklearn.log_model(model, "model")
+    # ================= Save Model =================
+    mlflow.sklearn.log_model(model, artifact_path="model")
 
 print("Training CI selesai. R2 =", r2)
