@@ -42,8 +42,8 @@ jobs:
             --random_state 42
 
       # 6️⃣ Upload MLflow artefacts
-      - name: Upload MLflow Artefacts
+      - name: Upload MLflow Model Artifact
         uses: actions/upload-artifact@v4
         with:
           name: trained-model
-          path: MLProject/mlruns
+          path: MLProject/mlruns/*/*/artifacts/model
