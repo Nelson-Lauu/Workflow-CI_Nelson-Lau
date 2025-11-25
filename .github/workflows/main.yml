@@ -12,46 +12,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Set up Python
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
 
-      # 3️⃣ Install dependencies
       - name: Install dependencies
         run: |
           pip install mlflow scikit-learn pandas numpy joblib matplotlib
 
-      # 4️⃣ Prepare MLflow Tracking Directory
-      - name: Prepare MLflow Tracking Directory
+      - name: Run model training
         run: |
-          mkdir -p MLProject/mlruns
-          export MLFLOW_TRACKING_URI=MLProject/mlruns
-
-      # 5️⃣ Train model
-      - name: Run Model Training
-        run: |
-          MLFLOW_TRACKING_URI=MLProject/mlruns python MLProject/modelling.py \
+          python MLProject/modelling.py \
             --data_path MLProject/namadataset_preprocessing/df_cleaned.csv \
             --test_size 0.2 \
             --random_state 42
 
-      # 6️⃣ Find MLflow model folder
-      - name: Find MLflow Model Directory
-        id: find_model
-        run: |
-          MODEL_DIR=$(find MLProject/mlruns -type d -name "model" | head -n 1)
-          echo "model_dir=$MODEL_DIR" >> $GITHUB_OUTPUT
-          echo "Found model at: $MODEL_DIR"
-
-      # 7️⃣ Upload model artifact
-      - name: Upload MLflow Model Artifact
+      - name: Upload trained model artifact
         uses: actions/upload-artifact@v4
         with:
           name: trained-model
-          path: ${{ steps.find_model.outputs.model_dir }}
+          path: MLProject/mlruns
