@@ -18,39 +18,40 @@ jobs:
 
       # 2️⃣ Set up Python
       - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.10"
 
-      # 3️⃣ Install dependencies via pip
+      # 3️⃣ Install dependencies
       - name: Install dependencies
         run: |
           pip install mlflow scikit-learn pandas numpy joblib matplotlib
 
       # 4️⃣ Set MLflow tracking folder
-      - name: Set MLflow tracking folder
+      - name: Prepare MLflow Tracking Directory
         run: |
           mkdir -p MLProject/mlruns
-          echo "MLFLOW_TRACKING_URI=MLProject/mlruns" >> $GITHUB_ENV
+          export MLFLOW_TRACKING_URI=MLProject/mlruns
 
-      # 5️⃣ Run modelling.py
-      - name: Run model training
+      # 5️⃣ Train model (modelling.py)
+      - name: Run Model Training
         run: |
-          python MLProject/modelling.py \
+          MLFLOW_TRACKING_URI=MLProject/mlruns python MLProject/modelling.py \
             --data_path MLProject/namadataset_preprocessing/df_cleaned.csv \
             --test_size 0.2 \
             --random_state 42
 
-      # 6️⃣ Find model directory dynamically
+      # 6️⃣ Find MLflow model folder (DINAMIS)
       - name: Find MLflow Model Directory
+        id: find_model
         run: |
           MODEL_DIR=$(find MLProject/mlruns -type d -name "model" | head -n 1)
-          echo "MODEL_DIR=$MODEL_DIR" >> $GITHUB_ENV
-          echo "Found model dir: $MODEL_DIR"
+          echo "model_dir=$MODEL_DIR" >> $GITHUB_OUTPUT
+          echo "Found model at: $MODEL_DIR"
 
-      # 7️⃣ Upload MLflow model artifact
+      # 7️⃣ Upload model artifact
       - name: Upload MLflow Model Artifact
         uses: actions/upload-artifact@v4
         with:
           name: trained-model
-          path: ${{ env.MODEL_DIR }}
+          path: ${{ steps.find_model.outputs.model_dir }}
